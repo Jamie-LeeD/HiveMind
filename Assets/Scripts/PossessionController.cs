@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -21,6 +22,8 @@ public class PossessionController : MonoBehaviour
 
     public bool ControllingSkeleton => controllingSkeleton;
     public bool IsGameOver => gameOver;
+    public bool HasWon { get; private set; }
+    public event Action Won;
     public string PromptText { get; private set; } = "";
 
     void Awake()
@@ -195,6 +198,16 @@ public class PossessionController : MonoBehaviour
             followCamera.LookEnabled = false;
 
         UnlockCursor();
+    }
+
+    public void Win()
+    {
+        if (gameOver || HasWon)
+            return;
+
+        HasWon = true;
+        HandleGameOver();
+        Won?.Invoke();
     }
 
     void SetWitchInControl(bool snapCamera)

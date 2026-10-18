@@ -63,7 +63,7 @@ public class PauseMenu : MonoBehaviour
     {
         if (Keyboard.current == null || !Keyboard.current.escapeKey.wasPressedThisFrame)
             return;
-        if (possession != null && possession.IsGameOver)
+        if (possession != null && (possession.IsGameOver || possession.HasWon))
             return;
 
         if (controlsMenu != null && controlsMenu.activeSelf)

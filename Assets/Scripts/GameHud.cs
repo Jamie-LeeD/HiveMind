@@ -19,8 +19,11 @@ public class GameHud : MonoBehaviour
     [SerializeField] TMP_Text promptText;
     [SerializeField] TMP_Text depletedText;
     [SerializeField] GameObject losePanel;
+    [SerializeField] GameObject winPanel;
     [SerializeField] Button retryButton;
     [SerializeField] Button exitButton;
+    [SerializeField] Button homeButton;
+    [SerializeField] Button winExitButton;
     [SerializeField] float depletedMessageSeconds = 2.5f;
 
     float depletedTimer;
@@ -34,6 +37,8 @@ public class GameHud : MonoBehaviour
 
         if (losePanel != null)
             losePanel.SetActive(false);
+        if (winPanel != null)
+            winPanel.SetActive(false);
         if (depletedText != null)
             depletedText.gameObject.SetActive(false);
         if (manaText != null)
@@ -58,10 +63,17 @@ public class GameHud : MonoBehaviour
             lives.GameOver += OnGameOver;
         }
 
+        if (possession != null)
+            possession.Won += OnWon;
+
         if (retryButton != null)
             retryButton.onClick.AddListener(Retry);
         if (exitButton != null)
             exitButton.onClick.AddListener(ExitGame);
+        if (homeButton != null)
+            homeButton.onClick.AddListener(GoToStart);
+        if (winExitButton != null)
+            winExitButton.onClick.AddListener(ExitGame);
     }
 
     void OnDisable()
@@ -78,10 +90,17 @@ public class GameHud : MonoBehaviour
             lives.GameOver -= OnGameOver;
         }
 
+        if (possession != null)
+            possession.Won -= OnWon;
+
         if (retryButton != null)
             retryButton.onClick.RemoveListener(Retry);
         if (exitButton != null)
             exitButton.onClick.RemoveListener(ExitGame);
+        if (homeButton != null)
+            homeButton.onClick.RemoveListener(GoToStart);
+        if (winExitButton != null)
+            winExitButton.onClick.RemoveListener(ExitGame);
     }
 
     void Start()
@@ -106,7 +125,7 @@ public class GameHud : MonoBehaviour
 
         if (promptText != null)
         {
-            bool show = !possession.IsGameOver && !string.IsNullOrEmpty(possession.PromptText);
+            bool show = !possession.IsGameOver && !possession.HasWon && !string.IsNullOrEmpty(possession.PromptText);
             promptText.gameObject.SetActive(show);
             if (show)
                 promptText.text = possession.PromptText;
@@ -149,6 +168,22 @@ public class GameHud : MonoBehaviour
             promptText.gameObject.SetActive(false);
         if (depletedText != null)
             depletedText.gameObject.SetActive(false);
+    }
+
+    void OnWon()
+    {
+        if (winPanel != null)
+            winPanel.SetActive(true);
+        if (promptText != null)
+            promptText.gameObject.SetActive(false);
+        if (depletedText != null)
+            depletedText.gameObject.SetActive(false);
+    }
+
+    public void GoToStart()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("StartScene");
     }
 
     public void Retry()
